@@ -8,7 +8,6 @@ use DBI;
 use Sys::Hostname 'hostname';
 use Cpanel::JSON::XS qw'decode_json encode_json';
 use URI;
-use URI::Escape::XS;
 use File::Copy::Recursive qw'pathmk pathrmdir';
 use WWW::RobotRules;
 use IPC::Run;
