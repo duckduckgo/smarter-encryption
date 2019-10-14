@@ -1,0 +1,64 @@
+---
+
+# Top-level temp directory will be created on start and removed
+# on exit.  Each crawler will have its own subdirectory with
+# PID appended
+TMP_DIR: /tmp/smarter_encryption
+CRAWLER_TMP_PREFIX: crawler_
+
+# User agent. Will use defaults if not specified
+#UA: 
+VERBOSE: 1
+
+# Paths to system binaries.  If in path already, just the program
+# name should suffice.
+COMPARE: /usr/local/bin/compare 
+PKILL: /usr/bin/pkill
+
+# Database connection options.  If not specified will connect as
+# the current user.
+#DB:
+#HOST:
+#PORT:
+#USER:
+#PASS:
+
+# Number of concurrent crawlers per cpu.
+CRAWLERS_PER_CPU: 3
+# or exact number
+# MAX_CONCURRENT_CRAWLERS: 10
+
+# Path to phantomjs.  Should be v2.1.1
+PHANTOMJS: phantomjs
+
+# Path to modified netsniff.js
+NETSNIFF_SS: netsniff_screenshot.js
+
+# Timeout before killing phantomjs in seconds
+HEADLESS_ALARM: 30
+
+# Whether to continue running and polling the queue or exit when finished.
+# If specified and non-zero, it is the number of seconds to wait in
+# between polls.
+POLL: 60
+
+# Number of sites a crawler should process before exiting
+SITES_PER_CRAWLER: 10
+
+# Desired number of URLs to check for each site 
+URLS_PER_SITE: 10
+
+# Max percentage of URLS_PER_SITE included from the current home page
+HOMEPAGE_LINK_PCT: 0.5
+
+# Number of times to re-request HTTPs URL on failure
+HTTPS_RETRIES: 1
+
+# If SCREENSHOT_RETRIES is not 0, the comparison between HTTP and HTTPs
+# pages will be re-run if the diff is above SCREENSHOT_THRESHOLD.  It
+# will also introduce a delay before taking the screenshot to potentially
+# overcome slight network differences between the two. The delay will
+# remain in effect for links still to be processed for the site.
+SCREENSHOT_RETRIES: 1
+SCREENSHOT_THRESHOLD: 0.05
+PHANTOM_RENDER_DELAY: 1000

@@ -1,0 +1,8 @@
+Smarter Encryption includes the following third party software:
+
+Software Name: PhantomJS
+Version: 2.1.1
+License: BSD-3-Clause
+Modified by DDG: Yes
+Location: netsniff_screenshot.js
+Obtained from: https://github.com/ariya/phantomjs
