@@ -1,7 +1,5 @@
 # DuckDuckGo Smarter Encryption 
 
-DuckDuckGo Firefox and Chrome extensions
-
 This software is licensed under the terms of the <TBA> (see [LICENSE](LICENSE)). Copyright (c) 2012 - 2019 [duckduckgo.com](https://duckduckgo.com)
 
 ## Reporting bugs
