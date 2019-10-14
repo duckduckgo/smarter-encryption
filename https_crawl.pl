@@ -22,7 +22,6 @@ use SmarterEncryption::Crawl qw'
 ';
 use Module::Load::Conditional 'can_load';
 
-
 use feature 'state';
 use strict;
 use warnings;
@@ -743,7 +742,7 @@ ENDOFUSAGE
             $config_file_specified = 1;
         }
         elsif($ARGV[$i] =~ /^-h$/i ){ die "$usage\n" }
-        
-        die "Config file required\n\n$usage\n" unless $config_file_specified;
     }
+
+    die "Config file required\n\n$usage\n" unless $config_file_specified;
 }
