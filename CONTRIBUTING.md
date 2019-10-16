@@ -5,12 +5,6 @@
 1. First check to see if the bug has not already been [reported](https://github.com/duckduckgo/smarter-encryption/issues).
 2. Create a bug report [issue](https://github.com/duckduckgo/smarter-encryption/issues/new?template=bug_report.md).
 
-# Feature requests
-
-There are two ways to submit feedback:
-1. You can send anonymous feedback using the "Send feedback" link on the extension's options page.
-2. You can submit your request as an [issue](https://github.com/duckduckgo/duckduckgo-privacy-extension/issues/new?template=feature_request.md). First check to see if the feature has not already been [suggested](https://github.com/duckduckgo/duckduckgo-privacy-extension/issues).
-
 # Development
 
 ## New features
