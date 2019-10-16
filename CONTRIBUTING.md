@@ -1,9 +1,5 @@
 # Contributing guidelines
 
-# Reporting broken sites
-
-Report broken websites using the "Report Broken Site" link on the extension popup.
-
 # Reporting bugs
 
 1. First check to see if the bug has not already been [reported](https://github.com/duckduckgo/smarter-encryption/issues).
