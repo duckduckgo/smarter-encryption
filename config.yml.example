@@ -13,7 +13,6 @@ VERBOSE: 1
 # Paths to system binaries.  If in path already, just the program
 # name should suffice.
 COMPARE: /usr/local/bin/compare 
-TIMEOUT: /usr/bin/timeout
 PKILL: /usr/bin/pkill
 
 # Database connection options.  If not specified will connect as
