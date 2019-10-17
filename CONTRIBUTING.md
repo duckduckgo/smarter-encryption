@@ -50,17 +50,18 @@ Edit the settings as necessary for your system.
 ```sql
 insert into full_urls (host, url) values ('duckduckgo.com', 'https://duckduckgo.com/?q=privacy'), ...
 ```
-The crawler will attempt to get URLs from the home page if none are available in this table.
+The crawler will attempt to get URLs from the home page even if none are available in this table.
 
 ### Running the crawler
 
-1. The crawler can be run as follows:
-```sh
-perl -Mlib=/path/to/smarter-encryption https_crawl.pl -c /path/to/config.yml
-```
-2. Add a host to be crawled to the `https_queue` table:
+1. Add hosts to be crawled to the `https_queue` table:
 ```sql
 insert into https_queue (domain) values ('duckduckgo.com');
+```
+
+2. The crawler can be run as follows:
+```sh
+perl -Mlib=/path/to/smarter-encryption https_crawl.pl -c /path/to/config.yml
 ```
 
 ### Checking the results
@@ -69,7 +70,7 @@ insert into https_queue (domain) values ('duckduckgo.com');
 ```sql
 select * from https_crawl where domain = 'duckduckgo.com' order by id desc limit 10;
 ```
-The maximum URLs for the crawl session, i.e. `limit`, is set with [URLS_PER_SITE](config.yml.example#L49).
+The maximum URLs for the crawl session, i.e. `limit`, is determined by [URLS_PER_SITE](config.yml.example#L49).
 
 2. Aggregate session data for each host is stored in `https_crawl_aggregate`:
 ```sql
@@ -79,3 +80,73 @@ There is also an associated view - `https_upgrade_metrics` - that further distil
 ```sql
 select * from https_upgrade_metrics where domain = 'duckduckgo.com';
 ```
+
+3. Additional information about the host and individual requests can be found in the tables:
+
+  * `sss_cert_info`
+  * `mixed_assets`
+  * `https_response_headers`
+
+4. Hosts can be selected based on various combinations of criteria directly from the above tables or by using the `upgradeable_domains` function.  
+
+### Data Model
+
+| Entity | Attribute | Description | Type | Key | Relationships |
+| --- | --- | --- | --- | --- | --- |
+| **full_urls** | host | hostname | text |unique||
+|| url | Complete URL with scheme | text |unique||
+|| updated | When added to table | timestamp with time zone |||
+|||||||
+| **https_queue** | rank | Processing order | integer |primary||
+||domain | Domain to be crawled | character varying(500) |||
+||processing_host|Hostname of server processing domain|character varying(50)|||
+||worker_pid|Process ID of crawler handling domain|integer|||
+||reserved|When domain was selected for processing|timestamp with time zone|||
+||started|When processing of domain started|timestamp with time zone|||
+||finished|When processing of domain completed|timestamp with time zone|||
+|||||||
+|https_crawl|id|Comparison ID|bigint|unique||
+||domain|Domain evaluated|text|||
+||http_request_uri|Resulting URI of HTTP request|text|||
+||http_response|HTTP status code for HTTP request|integer|||
+||http_requests|Total requests made, including child subrequests, for HTTP request|integer|||
+||http_size|Size of HTTP response (bytes)|integer|||
+||https_request_uri|Resulting URI of HTTPs request|text|||
+||https_response|HTTP status code for HTTPs request|integer|||
+||https_requests|Total requests made, including child subrequests, for HTTPs request|integer|||
+||https_size|Size of HTTPs response (bytes)|integer|||
+||timestamp|When inserted|timestamp with time zone|||
+||screenshot_diff|Percentage difference between HTTP and HTTPs screenshots after page load|real|||
+||autoupgrade|Whether HTTP request was redirected to HTTPs|boolean|||
+||mixed|Whether HTTPs request had HTTP child requests|boolean|||
+|||||||
+|**mixed_assets**|https_crawl_id|https_crawl.id, only associated with https_* columns|bigint|unique/foreign|https_crawl: 1:*|
+||asset|URI of HTTP subrequest made during HTTPs request|text|unique||
+|||||||
+|**https_response_headers**|https_crawl_id|https_crawl.id, only associated with https_* columns|bigint|unique/foreign|1:1|
+||response_headers|key/value of all HTTPs response headers|jsonb|||
+|||||||
+|**ssl_cert_info**|domain|Domain evaluated|text|primary||
+||issuer||Issuer of SSL certificate|text|||
+||notbefore|Valid from timestamp|timestamp with time zone|||
+||notafter|Valid to timestamp|timestamp with time zone|||
+||host_valid|Whether the domain is covered by the SSL certificate|boolean|||
+||err|Connection err|text|||
+||updated|When last updated|timestamp with time zone|||
+|||||||
+|**https_crawl_aggregate**|domain|Domain evaluated|text|primary||
+||https|Comparisons where only HTTPs was supported|integer|||
+||http_and_https|Comparisons where HTTP and HTTPs were supported|integer|||
+||http|Cmparisons where only HTTP was supported|integer|||
+||https_errs|Number of non-2xx HTTPs responses|integer|||
+||unknown|Comparisons where neither HTTP nor HTTPs responses were valid or the status codes differed|integer|||
+||autoupgrade|Comparisons where HTTP was redirected to HTTPs|integer|||
+||mixed_requests||HTTPs request that made HTTP calls|integer|||
+||max_screenshot_diff|Maximum percentage difference between HTTP and HTTPs screenshots|real|||
+||redirects|Number of HTTPs requests redirected to different host|integer|||
+||requests|Number of comparison requests actually made during the crawl session|integer|||
+||session_request_limit|The number of comparisons wanted for the session|integer|||
+||is_redirect|Whether the domain was actually crawled or is a redirect from another host in the table that was crawled|boolean|||
+||max_https_crawl_id|https_crawl.id of last comparison made during crawl session|bigint|||
+||redirect_hosts|key/value pairs of hosts and the number of redirects to it|jsonb|||
+|||||||
