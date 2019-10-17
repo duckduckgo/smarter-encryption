@@ -3,7 +3,7 @@
 Smarter Encryption is a large list of web sites that we know support HTTPS.  The list is automatically generated and updated
 by using the crawler in this repository.
 
-For more information about where the list is being used and how it compares to other solution, see our blog post [Your Connection is Secure with DuckDuckGo Smarter Encryption](https://spreadprivacy.com/p/0a85cdd9-9ccf-487e-bb6a-659b77592aa6).
+For more information about where the list is being used and how it compares to other solutions, see our blog post [Your Connection is Secure with DuckDuckGo Smarter Encryption](https://spreadprivacy.com/p/0a85cdd9-9ccf-487e-bb6a-659b77592aa6).
 
 This software is licensed under the terms of the Apache License, Version 2.0 (see [LICENSE](LICENSE)). Copyright (c) 2012 - 2019 [duckduckgo.com](https://duckduckgo.com)
 
