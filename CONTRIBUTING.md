@@ -1,5 +1,26 @@
 # Contributing guidelines
 
+* [Reporting bugs](#reporting-bugs)
+* [Development](#development)
+  * [New features](#new-features)
+  * [Bug fixes](#bug-fixes)
+* [Getting Started](#getting-started)
+  * [Pre-Requisites](#pre-requisites)
+  * [Setup](#setup)
+  * [Running the crawler](#running-the-crawler)
+  * [Checking the results](#checking-the-results)
+* [Data Model](#data-model)
+  * [full_urls](#full_urls)
+  * [https_queue](#https_queue)
+  * [https_crawl](#https_crawl)
+  * [mixed_assets](#mixed_assets)
+  * [https_response_headers](#https_response_headers)
+  * [ssl_cert_info](#ssl_cert_info)
+  * [https_crawl_aggregate](#https_crawl_aggregate)
+  * [https_upgrade_metrics](#https_upgrade_metrics)
+  * [domain_exceptions](#domain_exceptions)
+  * [upgradeable_domains](#upgradeable_domains)
+
 # Reporting bugs
 
 1. First check to see if the bug has not already been [reported](https://github.com/duckduckgo/smarter-encryption/issues).
