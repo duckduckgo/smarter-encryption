@@ -258,4 +258,4 @@ In addtion to the above parameters, the function enforces several other conditio
 2. From values in [ssl_cert_info](#ssl_cert_info):
    1. No err
    2. The domain, or host, must be valid for the certificate.
-   3. Valid to/from and the issuer must not be null
+   3. Valid from/to and the issuer must not be null
