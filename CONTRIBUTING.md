@@ -46,7 +46,7 @@ cp config.yml.example config.yml
 ```
 Edit the settings as necessary for your system.
 
-4. If you have a source of URLs you would like to be crawled for a host they can be added to the `full_urls` table:
+4. If you have a source of URLs you would like to be crawled for a host they can be added to the [full_urls](#full_urls) table:
 ```sql
 insert into full_urls (host, url) values ('duckduckgo.com', 'https://duckduckgo.com/?q=privacy'), ...
 ```
@@ -54,7 +54,7 @@ The crawler will attempt to get URLs from the home page even if none are availab
 
 ### Running the crawler
 
-1. Add hosts to be crawled to the `https_queue` table:
+1. Add hosts to be crawled to the [https_queue](#https_queue) table:
 ```sql
 insert into https_queue (domain) values ('duckduckgo.com');
 ```
@@ -66,26 +66,26 @@ perl -Mlib=/path/to/smarter-encryption https_crawl.pl -c /path/to/config.yml
 
 ### Checking the results
 
-1. The individual HTTP and HTTPs comparisons for each URL crawled are stored in `https_crawl`:
+1. The individual HTTP and HTTPs comparisons for each URL crawled are stored in [https_crawl](#https_crawl):
 ```sql
 select * from https_crawl where domain = 'duckduckgo.com' order by id desc limit 10;
 ```
 The maximum URLs for the crawl session, i.e. `limit`, is determined by [URLS_PER_SITE](config.yml.example#L49).
 
-2. Aggregate session data for each host is stored in `https_crawl_aggregate`:
+2. Aggregate session data for each host is stored in [https_crawl_aggregate](#https_crawl_aggregate):
 ```sql
 select * from https_crawl_aggregate where domain = 'duckduckgo.com';
 ```
-There is also an associated view - `https_upgrade_metrics` - that further distills the session into percentages:
+There is also an associated view - [https_upgrade_metrics](#https_upgrade_metrics - that calculates some additional metrics:
 ```sql
 select * from https_upgrade_metrics where domain = 'duckduckgo.com';
 ```
 
-3. Additional information about the host and individual requests can be found in the tables:
+3. Additional information from the crawl can be found in:
 
-  * `sss_cert_info`
-  * `mixed_assets`
-  * `https_response_headers`
+  * [sss_cert_info](#ssl_cert_info)
+  * [mixed_assets](#mixed_assets)
+  * [https_response_headers](#https_response_headers)
 
 4. Hosts can be selected based on various combinations of criteria directly from the above tables or by using the `upgradeable_domains` function.  
 
@@ -215,3 +215,26 @@ For manually excluding domains that may otherwise pass specific upgrade criteria
 | domain | Domain to exclude | text | primary |
 | comment | Reason for exclusion | text ||
 |updated|When added|timestamp with time zone||
+
+#### upgradeable_domains
+
+Function to select domains based on a variety of criteria.
+
+| Parameter | Description       | Type | Source     |
+| ---    | ---               | ---  | ---     |
+|autoupgrade_min|Minimum autoupgrade percentage|real|[https_upgrade_metrics](#https_upgrade_metrics)|
+|combined_min|Minimum percentage of HTTPs responses|real|[https_upgrade_metrics](#https_upgrade_metrics)|
+|screenshot_diff_max|Maximum observed screenshot diff allowed|real|[https_upgrade_metrics](#https_upgrade_metrics)|
+|mixed_ok|Whether to allow domains that had mixed content|boolean|[https_upgrade_metrics](#https_upgrade_metrics)|
+|max_err_rate|Maximum https_err_rate|real|[https_upgrade_metrics](#https_upgrade_metrics)|
+|unknown_max|Maximum unknown comparisons|real|[https_upgrade_metrics](#https_upgrade_metrics)|
+|ssl_cert_buffer|SSL certificate must be valid until this timestamp|timestamp with time zone|[ssl_cert_info](#ssl_cert_info)|
+|exclude_issuers|Array of SSL cert issuers to exclude|text array|[ssl_cert_info](#ssl_cert_info)|
+
+In addtion to the above parameters, the function enforces several other conditions:
+
+1. Domain must not be in [domain_exceptions](#domain_exceptions)
+2. From values in [ssl_cert_info](#ssl_cert_info):
+   1. No err
+   2. The domain, or host, must be valid for the certificate.
+   3. Valid to/from and the issuer must not be null
