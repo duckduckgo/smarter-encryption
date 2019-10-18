@@ -7,18 +7,9 @@ For more information about where the list is being used and how it compares to o
 
 This software is licensed under the terms of the Apache License, Version 2.0 (see [LICENSE](LICENSE)). Copyright (c) 2012 - 2019 [duckduckgo.com](https://duckduckgo.com)
 
-## Running the crawler
+## Contributing
 
-See [Getting Started](CONTRIBUTING.md#getting-started) for more information about running the crawler to evaluate
-web sites.
-
-## Reporting bugs
-
-See [Reporting bugs](CONTRIBUTING.md#reporting-bugs)
-
-## Development
-
-We're not accepting new feature pull requests right now.
+See [Contributing](CONTRIBUTING.md) for more information about [Reporting bugs](CONTRIBUTING.md#reporting-bugs) and [Getting Started](CONTRIBUTING.md#getting-started) with the crawler.
 
 ## Just want the list?
 
