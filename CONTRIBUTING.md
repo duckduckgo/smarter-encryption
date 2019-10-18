@@ -124,7 +124,7 @@ Complete URLs for hosts that will be used in addition to those the crawler extra
 
 #### https_queue
 
-Domains to be crawled in ranke order.  Multiple crawlers can access this concurrently.
+Domains to be crawled in rank order.  Multiple crawlers can access this concurrently.
 
 | Column | Description | Type | Key |
 | --- | --- | --- | --- |
