@@ -108,7 +108,7 @@ select * from https_upgrade_metrics where domain = 'duckduckgo.com';
   * [mixed_assets](#mixed_assets)
   * [https_response_headers](#https_response_headers)
 
-4. Hosts can be selected based on various combinations of criteria directly from the above tables or by using the `upgradeable_domains` function.  
+4. Hosts can be selected based on various combinations of criteria directly from the above tables or by using the [upgradeable_domains](#upgradeable_domains) function.  
 
 ### Data Model
 
