@@ -97,7 +97,7 @@ The maximum URLs for the crawl session, i.e. `limit`, is determined by [URLS_PER
 ```sql
 select * from https_crawl_aggregate where domain = 'duckduckgo.com';
 ```
-There is also an associated view - [https_upgrade_metrics](#https_upgrade_metrics - that calculates some additional metrics:
+There is also an associated view - [https_upgrade_metrics](#https_upgrade_metrics) - that calculates some additional metrics:
 ```sql
 select * from https_upgrade_metrics where domain = 'duckduckgo.com';
 ```
