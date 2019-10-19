@@ -184,7 +184,7 @@ SSL certificate information for domains crawled.
 | Column         | Description                                          | Type   | Key            |
 | ---            | ---                                                  | ---    | ---            |
 | domain | Domain evaluated | text | primary |
-|issuer||Issuer of SSL certificate|text||
+|issuer|Issuer of SSL certificate|text||
 |notbefore|Valid from timestamp|timestamp with time zone||
 |notafter|Valid to timestamp|timestamp with time zone||
 |host_valid|Whether the domain is covered by the SSL certificate|boolean||
@@ -204,7 +204,7 @@ Aggregate of [https_crawl](#https_crawl) that creates latest crawl sessions base
 |https_errs|Number of non-2xx HTTPs responses|integer||
 |unknown|Comparisons where neither HTTP nor HTTPs responses were valid or the status codes differed|integer||
 |autoupgrade|Comparisons where HTTP was redirected to HTTPs|integer||
-|mixed_requests||HTTPs request that made HTTP calls|integer||
+|mixed_requests|HTTPs request that made HTTP calls|integer||
 |max_screenshot_diff|Maximum percentage difference between HTTP and HTTPs screenshots|real||
 |redirects|Number of HTTPs requests redirected to different host|integer||
 |requests|Number of comparison requests actually made during the crawl session|integer||
