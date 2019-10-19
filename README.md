@@ -17,4 +17,4 @@ The list we use (as a result of running this code) is [publicly available](http:
 If you'd like to license the list for commercial use, [please reach out](https://help.duckduckgo.com/duckduckgo-help-pages/company/contact-us/).
 
 ## Questions or help with other DuckDuckGo things?
-See [DucKDuckGo Help Pages](https://duck.co/help).
+See [DuckDuckGo Help Pages](https://duck.co/help).
