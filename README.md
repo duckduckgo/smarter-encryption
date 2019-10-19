@@ -4,7 +4,7 @@ DuckDuckGo Smarter Encryption is a large list of web sites that we know support 
 
 For more information about where the list is being used and how it compares to other solutions, see our blog post [Your Connection is Secure with DuckDuckGo Smarter Encryption](https://spreadprivacy.com/duckduckgo-smarter-encryption).
 
-This software is licensed under the terms of the Apache License, Version 2.0 (see [LICENSE](LICENSE)). Copyright (c) 2019 [duckduckgo.com](https://duckduckgo.com)
+This software is licensed under the terms of the Apache License, Version 2.0 (see [LICENSE](LICENSE)). Copyright (c) 2019 [Duck Duck Go, Inc.](https://duckduckgo.com)
 
 ## Contributing
 
