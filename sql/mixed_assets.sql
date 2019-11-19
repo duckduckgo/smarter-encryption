@@ -41,7 +41,7 @@ CREATE UNIQUE INDEX mixed_assets_unique_substrmd5_idx ON mixed_assets USING btre
 --
 
 ALTER TABLE ONLY mixed_assets
-    ADD CONSTRAINT mixed_assets_https_crawl_id_fkey FOREIGN KEY (https_crawl_id) REFERENCES https_crawl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT mixed_assets_https_crawl_id_fkey FOREIGN KEY (https_crawl_id) REFERENCES https_crawl(id) ON DELETE CASCADE;
 
 
 --
