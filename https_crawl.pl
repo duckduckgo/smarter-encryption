@@ -333,7 +333,6 @@ sub crawl_sites{
                     mixed_requests
                     max_ss_diff
                     redirects
-                    max_id
                     requests
                     is_redirect
                     redirect_hosts'
@@ -412,18 +411,18 @@ sub prep_db {
                 domain,
                 https,
                 http_and_https,
-                https_errs, http,
+                https_errs,
+                http,
                 unknown,
                 autoupgrade,
                 mixed_requests,
                 max_screenshot_diff,
                 redirects,
-                max_https_crawl_id,
                 requests,
                 is_redirect,
                 redirect_hosts,
                 session_request_limit)
-                values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,$CC{URLS_PER_SITE})
+                values (?,?,?,?,?,?,?,?,?,?,?,?,?,$CC{URLS_PER_SITE})
             on conflict (domain) do update set (
                 https,
                 http_and_https,
@@ -434,11 +433,11 @@ sub prep_db {
                 mixed_requests,
                 max_screenshot_diff,
                 redirects,
-                max_https_crawl_id,
                 requests,
                 is_redirect,
                 redirect_hosts,
-                session_request_limit
+                session_request_limit,
+                updated
             ) = (
                 EXCLUDED.https,
                 EXCLUDED.http_and_https,
@@ -453,7 +452,9 @@ sub prep_db {
                 EXCLUDED.requests,
                 EXCLUDED.is_redirect,
                 EXCLUDED.redirect_hosts,
-                EXCLUDED.session_request_limit)
+                EXCLUDED.session_request_limit,
+                now()
+            )
             where
                 EXCLUDED.is_redirect = false or
                 https_crawl_aggregate.is_redirect = true

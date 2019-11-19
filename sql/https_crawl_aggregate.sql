@@ -37,8 +37,8 @@ CREATE TABLE https_crawl_aggregate (
     requests integer NOT NULL,
     session_request_limit integer NOT NULL,
     is_redirect boolean DEFAULT false NOT NULL,
-    max_https_crawl_id bigint NOT NULL,
-    redirect_hosts jsonb
+    redirect_hosts jsonb,
+    updated timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
