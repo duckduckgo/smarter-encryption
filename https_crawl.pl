@@ -448,7 +448,6 @@ sub prep_db {
                 EXCLUDED.mixed_requests,
                 EXCLUDED.max_screenshot_diff,
                 EXCLUDED.redirects,
-                EXCLUDED.max_https_crawl_id,
                 EXCLUDED.requests,
                 EXCLUDED.is_redirect,
                 EXCLUDED.redirect_hosts,
