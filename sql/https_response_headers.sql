@@ -48,7 +48,7 @@ CREATE INDEX https_response_headers_response_headers_idx ON https_response_heade
 --
 
 ALTER TABLE ONLY https_response_headers
-    ADD CONSTRAINT https_response_headers_https_crawl_id_fkey FOREIGN KEY (https_crawl_id) REFERENCES https_crawl(id);
+    ADD CONSTRAINT https_response_headers_https_crawl_id_fkey FOREIGN KEY (https_crawl_id) REFERENCES https_crawl(id) ON DELETE CASCADE;
 
 
 --
