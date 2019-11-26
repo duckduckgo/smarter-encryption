@@ -210,8 +210,8 @@ Aggregate of [https_crawl](#https_crawl) that creates latest crawl sessions base
 |requests|Number of comparison requests actually made during the crawl session|integer||
 |session_request_limit|The number of comparisons wanted for the session|integer||
 |is_redirect|Whether the domain was actually crawled or is a redirect from another host in the table that was crawled|boolean||
-|max_https_crawl_id|https_crawl.id of last comparison made during crawl session|bigint||
 |redirect_hosts|key/value pairs of hosts and the number of redirects to it|jsonb||
+|updated|When last updated|timestamp with time zone||
 
 #### https_upgrade_metrics
 
