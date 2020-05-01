@@ -141,8 +141,6 @@ sub crawl_sites{
 
     my $VERBOSE = $CC{VERBOSE};
     my $db = prep_db('crawl');
-    my ($con, $start_task, $insert_domain, $insert_headers, $insert_mixed, $insert_ssl) =
-        @{$db}{qw'con start_task insert_domain insert_headers insert_mixed insert_ssl'};
 
     my $crawler_tmp_dir = "$CC{TMP_DIR}/$CC{CRAWLER_TMP_PREFIX}$$";
     my $rm_tmp = pathmk($crawler_tmp_dir);
@@ -150,8 +148,17 @@ sub crawl_sites{
     my @urls_by_domain;
     for(my $i = 0;$i < @$ranks;++$i){
         my $rank = $ranks->[$i];
-        $start_task->execute($$, $rank);
-        my $domain = $start_task->fetchall_arrayref->[0][0];
+
+        my $domain;
+        eval {
+            $db->{start_task}->execute($$, $rank);
+            $domain = $db->{start_task}->fetchall_arrayref->[0][0];
+        }
+        or do {
+            warn "Failed to start task for rank $rank: $@";
+            next;
+        };
+
         eval {
             $domain = URI->new("https://$domain/")->host;
             1;
@@ -160,6 +167,7 @@ sub crawl_sites{
             warn "Failed to filter domain $domain: $@";
             next;
         };
+
         $VERBOSE && warn "checking domain $domain\n";
         my $urls = get_urls_for_domain($domain, $db);
         my @pairs;
@@ -190,8 +198,13 @@ sub crawl_sites{
 
             unless($ssl_cert_checked{$domain}){
                 my $ssl = check_ssl_cert($domain);
-                $insert_ssl->execute($domain, @$ssl);
-                ++$ssl_cert_checked{$domain};
+                eval {
+                    $db->{insert_ssl}->execute($domain, @$ssl);
+                    ++$ssl_cert_checked{$domain};
+                }
+                or do {
+                    warn "Failed to insert ssl info for $domain: $@";
+                };
             }
 
             my %comparison;
@@ -259,18 +272,28 @@ sub crawl_sites{
                 }
             }
 
+            unless($db->{con}->ping){
+                $VERBOSE && warn "Reconnecting to DB before inserting comparison";
+                $db = prep_db('crawl');
+            }
+
             if(my $host = eval { URI->new($comparison{https_request_uri})->host}){
                 unless($ssl_cert_checked{$host}){
                     my $ssl = check_ssl_cert($host);
-                    $insert_ssl->execute($host, @$ssl);
-                    ++$ssl_cert_checked{$host};
+                    eval {
+                        $db->{insert_ssl}->execute($host, @$ssl);
+                        ++$ssl_cert_checked{$host};
+                    }
+                    or do {
+                        warn "Failed to insert ssl info for $host: $@";
+                    };
                 }
             }
 
             if($comparison{http_request_uri} || $comparison{https_request_uri}){
                 my $log_id;
                 eval {
-                    $insert_domain->execute(@comparison{qw'
+                    $db->{insert_domain}->execute(@comparison{qw'
                         domain
                         http_request_uri
                         http_response
@@ -284,7 +307,7 @@ sub crawl_sites{
                         mixed
                         ss_diff'}
                     );
-                    $log_id = $insert_domain->fetch()->[0];
+                    $log_id = $db->{insert_domain}->fetch()->[0];
                 }
                 or do {
                    $VERBOSE && warn "Failed to insert request for $domain: $@";
@@ -293,7 +316,7 @@ sub crawl_sites{
                 if($log_id){
                     if(my $hdrs = delete $comparison{https_response_headers}){
                         eval {
-                            $insert_headers->execute($log_id, $hdrs);
+                            $db->{insert_headers}->execute($log_id, $hdrs);
                         }
                         or do {
                             $VERBOSE && warn "Failed to insert response headers for $domain ($log_id): $@";
@@ -303,7 +326,7 @@ sub crawl_sites{
                     if(my $mixed_reqs = delete $comparison{mixed_children}){
                         for my $m (keys %$mixed_reqs){
                             eval{
-                                $insert_mixed->execute($log_id, $m);
+                                $db->{insert_mixed}->execute($log_id, $m);
                                 1;
                             }
                             or do {
@@ -318,31 +341,47 @@ sub crawl_sites{
         }
     }
 
-    my $upsert_aggregate = $db->{upsert_aggregate};
+    unless($db->{con}->ping){
+        $VERBOSE && warn "Reconnecting to DB before updating aggregate data";
+        $db = prep_db('crawl');
+    }
+
     while(my ($domain, $session) = each %sessions){
         my $aggregates = aggregate_crawl_session($domain, $session);
         while(my ($host, $agg) = each %$aggregates){
-            $upsert_aggregate->execute(
-                $host, @$agg{qw'
-                    https
-                    http_s
-                    https_errs
-                    http
-                    unknown
-                    autoupgrade
-                    mixed_requests
-                    max_ss_diff
-                    redirects
-                    max_id
-                    requests
-                    is_redirect
-                    redirect_hosts'
-                }
-            );
+            eval {
+                $db->{upsert_aggregate}->execute(
+                    $host, @$agg{qw'
+                        https
+                        http_s
+                        https_errs
+                        http
+                        unknown
+                        autoupgrade
+                        mixed_requests
+                        max_ss_diff
+                        redirects
+                        max_id
+                        requests
+                        is_redirect
+                        redirect_hosts'
+                    }
+                );
+                1;
+            }
+            or do {
+                warn "Failed to upsert aggregate for $host: $@";
+            };
         }
     }
 
-    $db->{finish_tasks}->execute($ranks_str);
+    eval {
+        $db->{finish_tasks}->execute($ranks_str);
+        1;
+    }
+    or do {
+        warn "Failed to finish tasks for ranks ($ranks_str): $@";
+    };
 
     system "$CC{PKILL} -9 -f '$crawler_tmp_dir '";
     pathrmdir($crawler_tmp_dir) if $rm_tmp;
