@@ -408,7 +408,7 @@ sub prep_db {
             )
             returning rank
         ");
-        my $reset_tasks = "
+        $db{reset_unfinished_tasks} = $con->prepare("
             update https_queue
                 set processing_host = null,
                 worker_pid = null,
@@ -416,11 +416,17 @@ sub prep_db {
                 started = null
             where
                 processing_host = '$HOST' and
-                finished is null";
-        $db{reset_unfinished_tasks} = $con->prepare($reset_tasks);
-        $db{reset_unfinished_worker_tasks} = $con->prepare($reset_tasks .
-            ' and worker_pid = ?'
-        );
+                finished is null
+        ");
+        $db{complete_unfinished_worker_tasks} = $con->prepare("
+            update https_queue
+                set finished = now(),
+                processing_host = '$HOST (incomplete)'
+            where
+                processing_host = '$HOST' and
+                finished is null and
+                worker_pid = ?
+        ");
     }
     elsif($target eq 'crawl'){
         $db{start_task} = $con->prepare('update https_queue set worker_pid = ?, started = now() where rank = ? returning domain');
@@ -705,11 +711,17 @@ sub crawler_done{
 
     # see if any of its domains were left unfinished
     my $pid = $c->PID;
-    my $db = prep_db('queue');
-    my $unfinished = $db->{reset_unfinished_worker_tasks}->execute($pid);
-    if($unfinished > 0){
-        $VERBOSE && warn "Reset $unfinished tasks for crawler with pid $pid\n";
+    eval {
+        my $db = prep_db('queue');
+        my $unfinished = $db->{complete_unfinished_worker_tasks}->execute($pid);
+        if($unfinished > 0){
+            $VERBOSE && warn "Reset $unfinished tasks for crawler with pid $pid\n";
+        }
+        1;
     }
+    or do {
+        warn "Failed to verify worker tasks: $@";
+    };
 
     # Check and clean up tmp dirs for hung crawlers
     $h->{crawler_tmp_dirs}{$pid} = 1;
