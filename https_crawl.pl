@@ -715,7 +715,7 @@ sub crawler_done{
         my $db = prep_db('queue');
         my $unfinished = $db->{complete_unfinished_worker_tasks}->execute($pid);
         if($unfinished > 0){
-            $VERBOSE && warn "Reset $unfinished tasks for crawler with pid $pid\n";
+            $VERBOSE && warn "Marked $unfinished tasks incomplete for crawler with pid $pid\n";
         }
         1;
     }
