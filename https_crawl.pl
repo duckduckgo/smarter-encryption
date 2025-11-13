@@ -27,8 +27,12 @@ use warnings;
 no warnings 'uninitialized';
 
 my $DDG_INTERNAL;
-if(can_load(modules => {'DDG::Util::HTTPS2' => undef})){
+if(can_load(modules => {
+    'DDG::Util::HTTPS2' => undef,
+    'DDG::Util::Crawl' => undef
+})){
     DDG::Util::HTTPS2->import(qw'add_stat backfill_urls');
+    DDG::Util::Crawl->import(qw'get_http_msg_sig_hdrs');
     $DDG_INTERNAL = 1;
 }
 
@@ -628,6 +632,17 @@ sub check_site {
         eval{
             @ENV{qw(PHANTOM_RENDER_DELAY PHANTOM_UA PHANTOM_TIMEOUT)} =
                 ($delay, "'$CC{UA}'", $PHANTOM_TIMEOUT);
+
+            # Build custom headers if HTTP message signatures are enabled
+            if($DDG_INTERNAL && $CC{ENABLE_HTTP_MESSAGE_SIGNATURES}){
+                # Clear any previous custom headers first
+                delete $ENV{CUSTOM_HEADERS};
+
+                my $sig_headers = get_http_msg_sig_hdrs('GET', $site);
+                if($sig_headers && %$sig_headers){
+                    $ENV{CUSTOM_HEADERS} = encode_json($sig_headers);
+                }
+            }
 
             my $out;
             my @cmd = (
