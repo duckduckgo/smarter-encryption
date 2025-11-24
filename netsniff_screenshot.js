@@ -118,6 +118,16 @@ var renderDelay = 0;
 if(system.env['PHANTOM_RENDER_DELAY'] !== 'undefined'){
     renderDelay = system.env['PHANTOM_RENDER_DELAY'];
 }
+// Parse and apply custom headers
+var customHeaders = {};
+if (system.env['CUSTOM_HEADERS'] !== undefined) {
+    try {
+        customHeaders = JSON.parse(system.env['CUSTOM_HEADERS']);
+    } catch (e) {
+        console.error('Failed to parse CUSTOM_HEADERS: ' + e);
+    }
+}
+page.customHeaders = customHeaders;
 
 page.viewportSize = { width: 1024, height: 768 };
 page.clipRect = { top: 0, left: 0, width: 1024, height: 768 };
