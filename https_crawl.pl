@@ -631,7 +631,8 @@ sub check_site {
 
         eval{
             @ENV{qw(PHANTOM_RENDER_DELAY PHANTOM_UA PHANTOM_TIMEOUT)} =
-                ($delay, "'$CC{UA}'", $PHANTOM_TIMEOUT);
+                # No shell runs PhantomJS, so quotes here would end up in the User-Agent header
+                ($delay, $CC{UA} // '', $PHANTOM_TIMEOUT);
 
             # Build custom headers if HTTP message signatures are enabled
             if($DDG_INTERNAL && $CC{ENABLE_HTTP_MESSAGE_SIGNATURES}){
